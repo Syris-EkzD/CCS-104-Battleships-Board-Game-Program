@@ -7,14 +7,15 @@ int NUM_SHIPS;
 
 void clearScreen();
 void instructions();
-void pickingGridSize();
 void exitGame();
 void buffer();
 void initGrid(char grid[ROWS][COLS]);
 void displayGrid(char grid[ROWS][COLS]);
 void placeShips(char grid[ROWS][COLS], int player);
-int takeShot(char opponentGrid[ROWS][COLS], char playerTrackingGrid[ROWS][COLS], int player);
 void startGame();
+int takeShot(char opponentGrid[ROWS][COLS], char playerTrackingGrid[ROWS][COLS], int player);
+int pickingGridSize();
+
 
 
 int main() {
@@ -38,9 +39,11 @@ int main() {
 		switch(choices) {
 			
 			case 1:
-				pickingGridSize();
-			    startGame();
-				break;
+   				if (pickingGridSize()) {  
+        		startGame();
+   			 	}
+    			break;
+
 				
 			case 2: 
 				instructions();
@@ -63,66 +66,73 @@ void clearScreen() {
 	system("cls");
 }
 
-void pickingGridSize() {
-	int gridSizeChoice;
-	
-	do {
-		clearScreen();
-		printf("Please choose the grid size and number of ships for you match!\n");
-		printf("1. 3x3 | 1 ship\n");
-		printf("2. 5x5 | 2 ships\n");
-		printf("3. 7x7 | 3 ships\n");
-		printf("4. 10x10 | 5 ships\n");
-		printf("Your choice: ");
-		if (scanf("%d", &gridSizeChoice) != 1) {
-			printf("Invalid Input!");
-			buffer();
-			getch();
-			gridSizeChoice = 0;
-			continue;
-		}
-		
-		switch(gridSizeChoice) {
-			
-			case 1:
-				ROWS = 3;
-				COLS = 3;
-				NUM_SHIPS = 1;
-				break;
-			
-			case 2:
-				ROWS = 5;
-				COLS = 5;
-				NUM_SHIPS = 2;
-				break;
-				
-			case 3: 
-				ROWS = 7;
-				COLS = 7;
-				NUM_SHIPS = 3;
-				break;
-				
-			case 4:
-				ROWS = 10;
-				COLS = 10;
-				NUM_SHIPS = 5;
-				break;
-				
-			default: 
-				printf("Invalid Choice");
-				gridSizeChoice = 0;	
-				buffer();
-				getch();
-				continue;
-		}
-	} while(gridSizeChoice == 0);
+int pickingGridSize() {  
+    int gridSizeChoice;
+
+    do {
+        clearScreen();
+        printf("Please choose the grid size and number of ships for your match!\n");
+        printf("1. 3x3 | 1 ship\n");
+        printf("2. 5x5 | 2 ships\n");
+        printf("3. 7x7 | 3 ships\n");
+        printf("4. 10x10 | 5 ships\n");
+        printf("5. Return to Menu\n");
+        printf("Your choice: ");
+
+        if (scanf("%d", &gridSizeChoice) != 1) {
+            printf("Invalid Input!");
+            buffer();
+            getch();
+            gridSizeChoice = 0;
+            continue;
+        }
+
+        switch (gridSizeChoice) {
+            case 1:
+                ROWS = 3;
+                COLS = 3;
+                NUM_SHIPS = 1;
+                return 1; 
+
+            case 2:
+                ROWS = 5;
+                COLS = 5;
+                NUM_SHIPS = 2;
+                return 1;
+
+            case 3:
+                ROWS = 7;
+                COLS = 7;
+                NUM_SHIPS = 3;
+                return 1;
+
+            case 4:
+                ROWS = 10;
+                COLS = 10;
+                NUM_SHIPS = 5;
+                return 1;
+
+            case 5:
+                return 0; 
+
+            default:
+                printf("Invalid Choice");
+                gridSizeChoice = 0;
+                buffer();
+                getch();
+                continue;
+        }
+    } while (gridSizeChoice == 0);
+
+    return 1; 
 }
+
 
 void instructions() {
     clearScreen();
     printf("Welcome to Battleships!\n\n");
-    printf("1. Each player places their %d ships on their own grid.\n", NUM_SHIPS);
-    printf("2. Grids use coordinates: [Row][Column]. For example, '23' = Row 2, Column 3.\n");
+    printf("1. Each player places their ships on their own grid.\n");
+    printf("2. Grids use coordinates: \"[Row] [Column]\". For example, '2 3' = Row 2, Column 3.\n");
     printf("3. Players take turns guessing the locations of the opponent's ships.\n");
     printf("4. Hits are marked as 'X' and misses as 'O' on your tracking grid.\n");
     printf("5. The first player to sink all opponent ships wins.\n\n");
@@ -312,17 +322,24 @@ void startGame() {
 			}
 		}    
 		
-		clearScreen();
-		if (player1Ships == 0) {
-			printf("All of Player 1's ships have been destroyed!");
-			printf("\nPlayer 2 wins!!!");
-		} else {
-			printf("All of Player 2's ships have been destroyed!");
-			printf("\nPlayer 1 wins!!!");
-		}
-		printf("\nDo you wish to play again? [Y/N]: ");
-		
-		response = getch();
+		do {
+			clearScreen();
+			if (player1Ships == 0) {
+				printf("All of Player 1's ships have been destroyed!");
+				printf("\nPlayer 2 wins!!!");
+			} else {
+				printf("All of Player 2's ships have been destroyed!");
+				printf("\nPlayer 1 wins!!!");
+			}
+	            printf("\nDo you wish to play again? [Y/N]: ");
+	            response = getch();
+	
+	            if (response != 'Y' && response != 'y' && response != 'N' && response != 'n') {
+	                printf("\nInvalid Input! Please press Y or N.\n");
+	                getch(); 
+	            }
+        } while (response != 'Y' && response != 'y' && response != 'N' && response != 'n');
+        
 	} while (response == 'Y' || response == 'y');
 }
 
